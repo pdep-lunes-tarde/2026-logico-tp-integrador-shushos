@@ -2,7 +2,7 @@
 
 ## Integrantes
 
-**Equipo:** 
+**Equipo: Santiago Heit, Santiago Pyñeiro, Lorenzo Quinteros, Gianella Inetello** 
 
 ## Fecha de entrega de parte 1
 
