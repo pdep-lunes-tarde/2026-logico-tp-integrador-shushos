@@ -24,6 +24,41 @@ estaVivo(Persona, Anio):-
     Diferencia is Anio - AnioNacio,
     Diferencia =< 350.
 
+%Punto 2
+%version, hazania, quien la realizo, donde
+versionHazania(unica, rescatarALaHermanaDeWirbel, stark, klares).
+versionHazania(unica, rescatarALaHermanaDeWirbel, fern, klares).
+versionHazania(versionLawine, destruirAlDemonioAura, frieren, weise).
+versionHazania(versionVoll, destruirAlDemonioAura, denken, auberst).
+versionHazania(unica, destruirAlReyDemonio, frieren, ende).
+versionHazania(unica, destruirAlReyDemonio, himmel, ende).
+versionHazania(unica, destruirAlReyDemonio, heiter, ende).
+versionHazania(unica, destruirAlReyDemonio, eisen, ende).
+versionHazania(unica, recuperarAlGatoPerdido, himmel, weise).
+versionHazania(unica, recuperarAlGatoPerdido, frieren, weise).
+
+%Que hazania, que version, quien la conoce, como la conocio y cuando
+conoceHazania(rescatarALaHermanaDeWirbel, unica, wirbel, presencio, 1390).
+conoceHazania(rescatarALaHermanaDeWirbel, unica, frieren, presencio, 1390).
+conoceHazania(destruirAlDemonioAura, versionLawine, lawine, escuchoCancion, 1393).
+conoceHazania(destruirAlDemonioAura, versionVoll, voll, leyoLibro(50), 1400).
+conoceHazania(destruirAlReyDemonio, unica,serie, leyoLibro(100), 1335).
+conoceHazania(recuperarAlGatoPerdido, unica, kane, presencio, 1375).
+
+esRecordadaEnUnAnio(Persona, Anio, Hazania):-
+    estaVivo(Persona, Anio),
+    conoceHazania(Hazania, _, Persona, presencio, AnioPresencio),
+    Anio >= AnioPresencio.
+esRecordadaEnUnAnio(Persona, Anio, Hazania):-
+    estaVivo(Persona, Anio),
+    conoceHazania(Hazania, _, Persona, escuchoCancion, AnioEscucho),
+    Anio >= AnioEscucho,
+    Anio =< (AnioEscucho + 15).
+esRecordadaEnUnAnio(Persona, Anio, Hazania):-
+    estaVivo(Persona, Anio),
+    conoceHazania(Hazania, _, Persona, leyoLibro(Paginas), AnioLeyo),
+    Anio >= AnioLeyo,
+    Anio =< (AnioLeyo + Paginas).
 
 :- begin_tests(tpIntegrador, []).
 
@@ -39,5 +74,22 @@ estaVivo(Persona, Anio):-
         not(estaVivo(voll, 1551)).
     test(serie_esta_vivia_en_el_anio_5000, nondet) :-
         estaVivo(serie, 5000).
+    
+    %Punto2
+    test(lawine_no_recuerda_destruirAlDemonioAura_en_1380_porque_no_escucho_la_cancion, nondet):-
+        not(esRecordadaEnUnAnio(lawine, 1380, destruirAlDemonioAura)).
+    test(lawine_recuerda_detruirAlDemonioAura_en_1400, nondet):-
+        esRecordadaEnUnAnio(lawine, 1400, destruirAlDemonioAura).
+    test(lawine_ya_no_recuerda_destruirAlDemonioAura_en_1450, nondet):-
+        not(esRecordadaEnUnAnio(lawine, 1450, destruirAlDemonioAura)).
+    test(voll_recuerda_destruirAlDemonioAura_en_1450, nondet):-
+        esRecordadaEnUnAnio(voll, 1450, destruirAlDemonioAura).
+    test(voll_no_recuerda_destruirAlDemonioAura_en_1460, nondet):-
+        not(esRecordadaEnUnAnio(voll, 1460, destruirAlDemonioAura)).
+    test(wirbel_recuerda_rescatarALaHermanaDeWirbel_en_1430, nondet):-
+        esRecordadaEnUnAnio(wirbel, 1430, rescatarALaHermanaDeWirbel).
+    test(wirbel_no_recuerda_rescatarALaHermanaDeWirbel_en_1440_porque_ya_no_esta_vivo, nondet):-
+        not(esRecordadaEnUnAnio(wirbel, 1440, rescatarALaHermanaDeWirbel)).
+    
 
 :- end_tests(tpIntegrador).
