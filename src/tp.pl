@@ -60,6 +60,27 @@ esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     Anio >= AnioLeyo,
     Anio =< (AnioLeyo + Paginas).
 
+%Punto 2b
+estaCorroborada(Hazania):-
+    conoceHazania(Hazania, _, _, _, _),  %para que sea inversible
+    not(tieneVersionesDistintas(Hazania)). 
+
+tieneVersionesDistintas(Hazania):-
+    versionHazania(_, Hazania, Quien1, _),
+    versionHazania(_, Hazania, Quien2, _),
+    Quien1 \= Quien2.
+
+tieneVersionesDistintas(Hazania):-
+    versionHazania(_, Hazania, _, Donde1),
+    versionHazania(_, Hazania, _, Donde2),
+    Donde1 \= Donde2.
+
+%Punto 2c
+pasoAlOlvido(Hazania, Anio):-
+    conoceHazania(Hazania, _, _, _, _),
+    not(esRecordadaEnUnAnio(_, Anio, Hazania)).
+
+
 :- begin_tests(tpIntegrador, []).
 
     test(kanne_esta_viva_en_el_anio_1370, nondet) :-
@@ -90,6 +111,14 @@ esRecordadaEnUnAnio(Persona, Anio, Hazania):-
         esRecordadaEnUnAnio(wirbel, 1430, rescatarALaHermanaDeWirbel).
     test(wirbel_no_recuerda_rescatarALaHermanaDeWirbel_en_1440_porque_ya_no_esta_vivo, nondet):-
         not(esRecordadaEnUnAnio(wirbel, 1440, rescatarALaHermanaDeWirbel)).
+    %test(rescatar_a_la_hermana_de_Wirbel_es_una_hazania_corroborada, nondet):-
+    %    estaCorroborada(rescatarALaHermanaDeWirbel).
+    test(destruir_al_demonio_aura_no_es_hazania_corroborada, nondet):-
+        not(estaCorroborada(destruirAlDemonioAura)).
+    test(destruir_al_demonio_aura_paso_al_olvido_en_1460, nondet):-
+        pasoAlOlvido(destruirAlDemonioAura, 1460).
+    test(destruir_al_demonio_aura_no_paso_al_olvido_en_1440):-
+        not(pasoAlOlvido(destruirAlDemonioAura, 1440)).
     
 
 :- end_tests(tpIntegrador).
