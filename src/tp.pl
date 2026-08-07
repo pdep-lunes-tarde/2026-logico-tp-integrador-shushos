@@ -11,20 +11,25 @@ habitante(lernen, humano, 1315, auberst).
 habitante(frieren, elfo, 100, weise).
 habitante(eisen, enano, 1150, riegel).
 
+esperanzaDeVida(elfo, infinita).
+esperanzaDeVida(humano, 80).
+esperanzaDeVida(enano, 350).
+
 %Punto 1b
 estaVivo(Persona, Anio):-
-    habitante(Persona, elfo, AnioNacio, _),
-    Anio>AnioNacio.
-estaVivo(Persona, Anio):-
-    habitante(Persona, humano, AnioNacio, _),
-    Anio>AnioNacio,
+    habitante(Persona, Raza, AnioNacio, _),
+    nacio(Anio,AnioNacio),
     Diferencia is Anio - AnioNacio,
-    Diferencia =< 80.
-estaVivo(Persona, Anio):-
-    habitante(Persona, enano, AnioNacio, _),
-    Anio>AnioNacio,
-    Diferencia is Anio - AnioNacio,
-    Diferencia =< 350.
+    esperanzaDeVida(Raza, Esperanza),
+    sigueVivo(Esperanza, Diferencia).
+    
+nacio(Anio,AnioNacio):-
+    Anio > AnioNacio.
+
+sigueVivo(infinita, _).
+sigueVivo(Esperanza, Diferencia):-
+    Diferencia =< Esperanza.
+
 
 %Punto 2
 %version, hazania, quien la realizo, donde
