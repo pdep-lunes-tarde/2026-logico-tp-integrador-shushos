@@ -50,18 +50,8 @@ conoceHazania(recuperarAlGatoPerdido, kane, presencio, 1375).
 %Punto 2a
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     estaVivo(Persona, Anio),
-    conoceHazania(Hazania, Persona, presencio, AnioPresencio),
-    Anio >= AnioPresencio.
-esRecordadaEnUnAnio(Persona, Anio, Hazania):-
-    estaVivo(Persona, Anio),
-    conoceHazania(Hazania, Persona, escuchoCancion, AnioEscucho),
-    Anio >= AnioEscucho,
-    Anio =< (AnioEscucho + 15).
-esRecordadaEnUnAnio(Persona, Anio, Hazania):-
-    estaVivo(Persona, Anio),
-    conoceHazania(Hazania, Persona, leyoLibro(Paginas), AnioLeyo),
-    Anio >= AnioLeyo,
-    Anio =< (AnioLeyo + Paginas).
+    conoceHazania(Hazania, Persona, Forma, AnioForma),
+    verificaSiRecuerdaPorHazania(Forma, Anio, AnioForma).
 esRecordadaEnUnAnio(Persona,Anio,Hazania):-
     estaVivo(Persona,Anio),
     conocePorDiaFestivo(Persona,Hazania,Desde),
@@ -71,6 +61,16 @@ esRecordadaEnUnAnio(Persona,Anio,Hazania):-
     conocePorEstatua(Persona,Hazania,Desde,Pueblo),
     Anio >= Desde,
     estatuaVigente(Pueblo,Hazania,Anio).
+
+verificaSiRecuerdaPorHazania(presencio, Anio, AnioForma):-
+    Anio >= AnioForma.
+verificaSiRecuerdaPorHazania(escuchoCancion, Anio, AnioForma):-
+    Anio >= AnioForma,
+    Anio =< (AnioForma + 15).
+verificaSiRecuerdaPorHazania(leyoLibro(Paginas), Anio, AnioForma):-
+    Anio >= AnioForma,
+    Anio =< (AnioForma + Paginas).
+
 
 %Punto 2b
 estaCorroborada(Hazania):-
