@@ -27,17 +27,17 @@ estaVivo(Persona, Anio):-
 
 %Punto 2 
 %Que hazania con quien la hizo y donde, quien la conoce, como la conocio y cuando
-conoceHazania(rescatarALaHermanaDeWirbel([stark, fern], klares), wirbel, presencio, 1390).
-conoceHazania(rescatarALaHermanaDeWirbel([stark, fern], klares), frieren, presencio, 1390).
-conoceHazania(destruirAlDemonioAura([frieren], weise), lawine, escuchoCancion, 1393).
-conoceHazania(destruirAlDemonioAura([denken], auberst), voll, leyoLibro(50), 1400).
-conoceHazania(destruirAlReyDemonio([frieren, himmel, heiter, eisen], ende),serie, leyoLibro(100), 1335).
-conoceHazania(recuperarAlGatoPerdido([himmel, frieren], weise), kane, presencio, 1375).
+conoceHazania(hazania(rescatarALaHermanaDeWirbel, [stark, fern], klares), wirbel, presencio, 1390).
+conoceHazania(hazania(rescatarALaHermanaDeWirbel, [stark, fern], klares), frieren, presencio, 1390).
+conoceHazania(hazania(destruirAlDemonioAura, [frieren], weise), lawine, escuchoCancion, 1393).
+conoceHazania(hazania(destruirAlDemonioAura, [denken], auberst), voll, leyoLibro(50), 1400).
+conoceHazania(hazania(destruirAlReyDemonio, [frieren, himmel, heiter, eisen], ende),serie, leyoLibro(100), 1335).
+conoceHazania(hazania(recuperarAlGatoPerdido, [himmel, frieren], weise), kane, presencio, 1375).
 
 %Punto 2a
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     estaVivo(Persona, Anio),
-    conoceHazania(_ , Persona, Forma, AnioForma),
+    conoceHazania(hazania(Hazania, _, _) , Persona, Forma, AnioForma),
     verificaSiRecuerdaPorHazania(Forma, Anio, AnioForma).
 esRecordadaEnUnAnio(Persona,Anio,Hazania):-
     estaVivo(Persona,Anio),
@@ -61,27 +61,23 @@ verificaSiRecuerdaPorHazania(leyoLibro(Paginas), Anio, AnioForma):-
 
 %Punto 2b
 estaCorroborada(Hazania):-
+    conoceHazania(hazania(Hazania, _, _), _, _, _),
     not(tieneVersionesDistintas(Hazania)). 
 
 tieneVersionesDistintas(Hazania):-
-    conoceHazania(Hazania, QuienLaConoce1, _, _),
-    conoceHazania(Hazania, QuienLaConoce2, _, _),
-    QuienLaConoce1 \= QuienLaConoce2,
-    versionHazania(version(Hazania, QuienLaConoce1), Quien1, _), %aca hay que cambiarlo y comparar las personas dentro de las listas
-    versionHazania(version(Hazania, QuienLaConoce2), Quien2, _),
-    Quien1 \= Quien2.
+    conoceHazania(hazania(Hazania, Personas1, _), _, _, _),
+    conoceHazania(hazania(Hazania, Personas2, _), _, _, _),
+    Personas1 \= Personas2.
+
 
 tieneVersionesDistintas(Hazania):-
-    conoceHazania(Hazania, QuienLaConoce1, _, _),
-    conoceHazania(Hazania, QuienLaConoce2, _, _),
-    QuienLaConoce1 \= QuienLaConoce2,
-    versionHazania(version(Hazania, QuienLaConoce1), _, Donde1), % aca solo hay que comparar el functor de donde se realiza 
-    versionHazania(version(Hazania, QuienLaConoce2), _, Donde2),
-    Donde1 \= Donde2.
+    conoceHazania(hazania(Hazania, _, Lugar1), _, _, _),
+    conoceHazania(hazania(Hazania, _, Lugar2), _, _, _),
+    Lugar1 \= Lugar2.
 
 %Punto 2c
 pasoAlOlvido(Hazania, Anio):-
-    conoceHazania(Hazania, _, _, _),
+    conoceHazania(hazania(Hazania, _, _), _, _, _),
     not(esRecordadaEnUnAnio(_, Anio, Hazania)).
 
 %Punto3
@@ -104,7 +100,7 @@ ventanaValida(FechaInicio, Material, Anio):-
     Anio =< FechaInicio + Duracion.
 
 estatuaVigente(Pueblo,Hazania,Anio):-
-    estatua(Pueblo,Nombre,Material,Hazania,Construccion),
+    estatua(Pueblo,_,Material,Hazania,Construccion),
     ventanaValida(Construccion,Material,Anio).
 estatuaVigente(Pueblo,Hazania,Anio):-
     estatua(Pueblo,Nombre,Material,Hazania,_),
