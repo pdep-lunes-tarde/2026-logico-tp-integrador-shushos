@@ -34,20 +34,24 @@ conoceHazania(hazania(destruirAlDemonioAura, [denken], auberst), voll, leyoLibro
 conoceHazania(hazania(destruirAlReyDemonio, [frieren, himmel, heiter, eisen], ende),serie, leyoLibro(100), 1335).
 conoceHazania(hazania(recuperarAlGatoPerdido, [himmel, frieren], weise), kane, presencio, 1375).
 
+%Del Punto 3
+conoceHazania(Hazania, Persona, conmemoracion, Desde):-
+    habitante(Persona, _, Nacimiento, Pueblo),
+    conmemora(Pueblo, Hazania, Conmemoracion),
+    inicioConmemoracion(Conmemoracion, Inicio), maximo(Nacimiento, Inicio, Desde).
+
 %Punto 2a
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     estaVivo(Persona, Anio),
     conoceHazania(hazania(Hazania, _, _) , Persona, Forma, AnioForma),
     verificaSiRecuerdaPorHazania(Forma, Anio, AnioForma).
-esRecordadaEnUnAnio(Persona,Anio,Hazania):-
-    estaVivo(Persona,Anio),
-    conocePorDiaFestivo(Persona,Hazania,Desde),
-    Anio >= Desde.
-esRecordadaEnUnAnio(Persona,Anio,Hazania):-
-    estaVivo(Persona,Anio),
-    conocePorEstatua(Persona,Hazania,Desde,Pueblo),
+esRecordadaEnUnAnio(Persona, Anio, Hazania):-
+    estaVivo(Persona, Anio),
+    conoceHazania(Hazania, Persona, conmemoracion, Desde),
     Anio >= Desde,
-    estatuaVigente(Pueblo,Hazania,Anio).
+    habitante(Persona, _, _, Pueblo),
+    conmemora(Pueblo, Hazania, Conmemoracion),
+    conmemoracionVigente(Conmemoracion, Anio).
 
 verificaSiRecuerdaPorHazania(presencio, Anio, AnioForma):-
     Anio >= AnioForma.
@@ -80,50 +84,44 @@ pasoAlOlvido(Hazania, Anio):-
     conoceHazania(hazania(Hazania, _, _), _, _, _),
     not(esRecordadaEnUnAnio(_, Anio, Hazania)).
 
-%Punto3
+%Punto 3
 
-diaFestivo(weise, destruirAlReyDemonio, 1340).
+conmemora(weise, destruirAlReyDemonio, diaFestivo(1340)).
+conmemora(auberst, destruirAlReyDemonio, estatua("el equipo de heroes", bronce, 1370)).
+conmemora(auberst, destruirASchlatElOmnisciente, estatua("el heroe del sur", marmol, 1340)).
 
-estatua(auberst, "el equipo de heroes", bronce, destruirAlReyDemonio, 1370).
-estatua(auberst,"el heroe del sur", marmol,destruirASchlatElOmnisciente,1340). 
-    
-mantenimiento("el equipo de heroes",1400).
-mantenimiento("el equipo de heroes",1450).
-mantenimiento("el heroe del sur",1410).
 
-duracion(bronce,15).
-duracion(marmol,30).
+mantenimiento("el equipo de heroes", 1400).
+mantenimiento("el equipo de heroes", 1450).
+mantenimiento("el heroe del sur", 1410).
+
+
+duracion(bronce, 15).
+duracion(marmol, 30).
+
 
 ventanaValida(FechaInicio, Material, Anio):-
     duracion(Material, Duracion),
     Anio >= FechaInicio,
     Anio =< FechaInicio + Duracion.
 
-estatuaVigente(Pueblo,Hazania,Anio):-
-    estatua(Pueblo,_,Material,Hazania,Construccion),
-    ventanaValida(Construccion,Material,Anio).
-estatuaVigente(Pueblo,Hazania,Anio):-
-    estatua(Pueblo,Nombre,Material,Hazania,_),
-    mantenimiento(Nombre,FechaMantenimiento),
-    ventanaValida(FechaMantenimiento,Material,Anio).   
 
-conocePorEstatua(Persona,Hazania,Desde,Pueblo):-
-    habitante(Persona,_,Nacimiento,Pueblo),
-    estatua(Pueblo,_,_,Hazania,Inicio),
-    maximo(Nacimiento,Inicio,Desde).  
-    
-conocePorDiaFestivo(Persona,Hazania,Desde):-
-    habitante(Persona,_,Nacimiento,Pueblo),
-    diaFestivo(Pueblo,Hazania,Inicio),
-    maximo(Nacimiento,Inicio,Desde).    
-    
+inicioConmemoracion(diaFestivo(Inicio), Inicio).
+inicioConmemoracion(estatua(_, _, Inicio), Inicio).
 
+
+conmemoracionVigente(diaFestivo(_), _).
+conmemoracionVigente(estatua(_, Material, Construccion), Anio):-
+    ventanaValida(Construccion, Material, Anio).
+conmemoracionVigente(estatua(Nombre, Material, _), Anio):-
+    mantenimiento(Nombre, FechaMantenimiento),
+    ventanaValida(FechaMantenimiento, Material, Anio).
+   
 maximo(X,Y,X):-
     X >= Y.
 
 maximo(X,Y,Y):-
-    Y > X.    
-   
+    Y > X.
 
 
 
@@ -142,6 +140,7 @@ maximo(X,Y,Y):-
     test(serie_esta_vivia_en_el_anio_5000, nondet) :-
         estaVivo(serie, 5000).
     
+
     %Punto2
     test(lawine_no_recuerda_destruirAlDemonioAura_en_1380_porque_no_escucho_la_cancion, nondet):-
         not(esRecordadaEnUnAnio(lawine, 1380, destruirAlDemonioAura)).
@@ -168,16 +167,10 @@ maximo(X,Y,Y):-
     
 
     %punto 3
-   
-
     test(lawine_recuerda_destruir_al_rey_demonio_por_estatua_en_1400, nondet):-
         esRecordadaEnUnAnio(lawine, 1400, destruirAlReyDemonio).
-
-
     test(lawine_no_recuerda_destruir_al_rey_demonio_en_1390_por_estatua, nondet):-
         not(esRecordadaEnUnAnio(lawine, 1390, destruirAlReyDemonio)).
-
-
     test(fern_recuerda_destruir_al_rey_demonio_por_dia_festivo_en_1400, nondet):-
         esRecordadaEnUnAnio(fern, 1400, destruirAlReyDemonio).
 
