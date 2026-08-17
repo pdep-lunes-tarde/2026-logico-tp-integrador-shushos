@@ -25,6 +25,7 @@ estaVivo(Persona, Anio):-
     esperanzaDeVida(Raza, Esperanza),
     Diferencia =< Esperanza.
 
+
 %Punto 2 
 %Que hazania con quien la hizo y donde, quien la conoce, como la conocio y cuando
 conoceHazania(hazania(rescatarALaHermanaDeWirbel, [stark, fern], klares), wirbel, presencio, 1390).
@@ -39,6 +40,7 @@ conoceHazania(Hazania, Persona, conmemoracion, Desde):-
     habitante(Persona, _, Nacimiento, Pueblo),
     conmemora(Pueblo, Hazania, Conmemoracion),
     inicioConmemoracion(Conmemoracion, Inicio), maximo(Nacimiento, Inicio, Desde).
+
 
 %Punto 2a
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
@@ -84,6 +86,7 @@ pasoAlOlvido(Hazania, Anio):-
     conoceHazania(hazania(Hazania, _, _), _, _, _),
     not(esRecordadaEnUnAnio(_, Anio, Hazania)).
 
+
 %Punto 3
 
 conmemora(weise, destruirAlReyDemonio, diaFestivo(1340)).
@@ -119,11 +122,50 @@ conmemoracionVigente(estatua(Nombre, Material, _), Anio):-
    
 maximo(X,Y,X):-
     X >= Y.
-
 maximo(X,Y,Y):-
     Y > X.
 
 
+%Punto 4
+recuerdaHazaniaPueblo(Pueblo, Anio, Hazania):-
+    habitante(Persona, _, _, Pueblo),
+    esRecordadaEnUnAnio(Persona, Anio, Hazania).
+
+paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas):-
+    habitante(_, _, _, Pueblo),
+    findall(Pagina,
+        (
+            habitante(Persona, _, _, Pueblo), 
+            conoceHazania(_, Persona, leyoLibro(Pagina), Anio)
+        ), 
+        Paginas
+    ),
+    sum_list(Paginas, PaginasLeidas).
+
+puebloMasLector(Pueblo, Anio):-
+    habitante(_, _, _, Pueblo),
+    paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas),
+    forall(
+        (habitante(_, _, _, OtroPueblo), Pueblo \= OtroPueblo), 
+        (paginasLeidasPorPueblo(OtroPueblo, Anio, OtrasPaginasLeidas), OtrasPaginasLeidas < PaginasLeidas)
+        ).
+
+%esta mal, lo de recuerdosMusical si sirve, pero esto no
+puebloMusical(Pueblo, Anio):-
+    habitante(_, _, _, Pueblo),
+    findall(Forma, (habitante(Persona, _, _, Pueblo), conoceHazania(_, _, Forma, Anio)), Formas),
+    recuerdosMusical(Formas, ContadorMusical),
+    length(Formas, ContadorRecuerdos),
+    ContadorMusical >= ContadorRecuerdos/2. 
+
+recuerdosMusical([], 0).
+recuerdosMusical([Forma|Formas], ContadorMusical):-
+    Forma == escuchoCancion,
+    recuerdosMusical(Formas, Contador),
+    ContadorMusical is Contador + 1.
+recuerdosMusical([Forma|Formas], ContadorMusical):-
+    Forma \= escuchoCancion,
+    recuerdosMusical(Formas, ContadorMusical).
 
 :- begin_tests(tpIntegrador, []).
 
