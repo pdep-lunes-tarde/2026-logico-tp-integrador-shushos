@@ -131,6 +131,7 @@ recuerdaHazaniaPueblo(Pueblo, Anio, Hazania):-
     habitante(Persona, _, _, Pueblo),
     esRecordadaEnUnAnio(Persona, Anio, Hazania).
 
+
 paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas):-
     habitante(_, _, _, Pueblo),
     findall(Pagina,
@@ -142,6 +143,7 @@ paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas):-
     ),
     sum_list(Paginas, PaginasLeidas).
 
+
 puebloMasLector(Pueblo, Anio):-
     habitante(_, _, _, Pueblo),
     paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas),
@@ -150,22 +152,68 @@ puebloMasLector(Pueblo, Anio):-
         (paginasLeidasPorPueblo(OtroPueblo, Anio, OtrasPaginasLeidas), OtrasPaginasLeidas < PaginasLeidas)
         ).
 
-%esta mal, lo de recuerdosMusical si sirve, pero esto no
+
 puebloMusical(Pueblo, Anio):-
     habitante(_, _, _, Pueblo),
-    findall(Forma, (habitante(Persona, _, _, Pueblo), conoceHazania(_, _, Forma, Anio)), Formas),
-    recuerdosMusical(Formas, ContadorMusical),
-    length(Formas, ContadorRecuerdos),
-    ContadorMusical >= ContadorRecuerdos/2. 
+    findall(Hazania, (habitante(Persona, _, _, Pueblo), esRecordadaEnUnAnio(Persona, Anio, Hazania)), Hazanias),
+    sinRepetidos(Hazanias, HazaniasSinRepetir),
+    recuerdosMusical(HazaniasSinRepetir, ContadorMusical),
+    length(HazaniasSinRepetir, ContadorHazanias),
+    ContadorMusical > ContadorHazanias/2.
+
+sinRepetidos([], []).
+sinRepetidos([H|Cola], Resultado):-
+    member(H, Cola),
+    sinRepetidos(Cola, Resultado).
+sinRepetidos([H|Cola], [H|Resultado]):-
+    not(member(H, Cola)),
+    sinRepetidos(Cola, Resultado).
 
 recuerdosMusical([], 0).
-recuerdosMusical([Forma|Formas], ContadorMusical):-
-    Forma == escuchoCancion,
-    recuerdosMusical(Formas, Contador),
+recuerdosMusical([Hazania|Hazanias], ContadorMusical):-
+    conoceHazania(hazania(Hazania, _, _), _, escuchoCancion, _),
+    recuerdosMusical(Hazanias, Contador),
     ContadorMusical is Contador + 1.
-recuerdosMusical([Forma|Formas], ContadorMusical):-
-    Forma \= escuchoCancion,
-    recuerdosMusical(Formas, ContadorMusical).
+recuerdosMusical([Hazania|Hazanias], ContadorMusical):-
+    not(conoceHazania(hazania(Hazania, _, _), _, escuchoCancion, _)),
+    recuerdosMusical(Hazanias, ContadorMusical).
+
+
+puebloChismoso(Pueblo, Anio):-
+    habitante(_, _, _, Pueblo),
+    forall(
+            (
+                habitante(Persona, _, _, Pueblo),
+                esRecordadaEnUnAnio(Persona, Anio, Hazania)
+            ), 
+            not(estaCorroborada(Hazania))
+          ).
+
+
+esImportante(Hazania, Pueblo, Anio):-
+    habitante(_, _, _, Pueblo),
+    esRecordadaEnUnAnio(_, Anio, Hazania),
+    forall(
+            (
+                habitante(Persona, _, _, Pueblo),
+                estaVivo(Persona, Anio)
+            ),
+            esRecordadaEnUnAnio(Persona, Anio, Hazania)
+          ).
+
+
+viveTiemposSinPrecedentes(Pueblo, Anio):-
+    habitante(_, _, _, Pueblo),
+    forall(
+            esImportante(Hazania, Pueblo, Anio),
+            (
+                habitante(Persona, _, _, Pueblo),
+                esRecordadaEnUnAnio(Persona, Anio, Hazania),
+                conoceHazania(hazania(Hazania, _, _), Persona, presencio, AnioPresencio),
+                Anio >= AnioPresencio
+            )
+          ).
+
 
 :- begin_tests(tpIntegrador, []).
 
@@ -215,5 +263,36 @@ recuerdosMusical([Forma|Formas], ContadorMusical):-
         not(esRecordadaEnUnAnio(lawine, 1390, destruirAlReyDemonio)).
     test(fern_recuerda_destruir_al_rey_demonio_por_dia_festivo_en_1400, nondet):-
         esRecordadaEnUnAnio(fern, 1400, destruirAlReyDemonio).
+
+
+    %Punto 4
+    test(en_weise_se_recuerda_destruir_al_demonio_aura_en_1400, nondet):-
+        recuerdaHazaniaPueblo(weise, 1400, destruirAlDemonioAura).
+    test(en_klares_se_recuerda_rescatar_a_la_hermana_de_wirbel_en_1395, nondet):-
+        recuerdaHazaniaPueblo(klares, 1395, rescatarALaHermanaDeWirbel).
+    test(en_klares_no_se_recuerda_destruir_al_demonio_aura_en_1395, nondet):-
+        not(recuerdaHazaniaPueblo(klares, 1395, destruirAlDemonioAura)).
+    test(en_weise_se_leyeron_100_paginas_en_1335, nondet):-
+        paginasLeidasPorPueblo(weise, 1335, 100).
+    test(en_weise_se_leyeron_0_paginas_en_1336, nondet):-
+        paginasLeidasPorPueblo(weise, 1336, 0).
+    test(ende_es_el_pueblo_mas_lector_en_1400, nondet):-
+        puebloMasLector(ende, 1400).
+    test(auberst_es_musical_en_1395, nondet):-
+        puebloMusical(auberst, 1395).
+    test(weise_no_es_musical_en_1400, nondet):-
+        not(puebloMusical(weise, 1400)).
+    test(ende_es_chismoso_en_1420, nondet):-
+        puebloChismoso(ende, 1420).
+    test(weise_no_es_chismoso_en_1400, nondet):-
+        not(puebloChismoso(weise, 1400)).
+    test(destruir_al_rey_demonio_es_importante_para_weise_en_1400, nondet):-
+        esImportante(destruirAlReyDemonio, weise, 1400).
+    test(recuperar_al_gato_perdido_no_es_importante_para_weise_en_1400, nondet):-
+        not(esImportante(recuperarAlGatoPerdido, weise, 1400)).
+    test(klares_vive_tiempos_sin_precedentes_en_1395, nondet):-
+        viveTiemposSinPrecedentes(klares, 1395).
+    test(weise_no_vive_tiempos_sin_precedentes_en_1400, nondet):-
+        not(viveTiemposSinPrecedentes(weise, 1400)).
 
     :- end_tests(tpIntegrador).
