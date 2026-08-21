@@ -214,6 +214,25 @@ viveTiemposSinPrecedentes(Pueblo, Anio):-
             )
           ).
 
+%Parte 5
+%a
+esHeroe(Persona):-
+    conoceHazania(hazania(_,Participantes, _), _, _, _),
+    member(Persona, Participantes).
+
+%b
+inspiroAUnHeroe(HeroeInspirado, Inspirador):-
+    esHeroe(HeroeInspirado),
+    conoceHazania(hazania(_, Participantes, _), _, _, _),
+    member(Inspirador, Participantes),
+    Inspirador \= HeroeInspirado.
+
+%c
+%cadenaDeInspiracion(HeroeInicial, Cadena):-
+%    esHeroe(HeroeInicial),
+%    dsp lo completo :)
+
+
 
 :- begin_tests(tpIntegrador, []).
 
@@ -294,5 +313,23 @@ viveTiemposSinPrecedentes(Pueblo, Anio):-
         viveTiemposSinPrecedentes(klares, 1395).
     test(weise_no_vive_tiempos_sin_precedentes_en_1400, nondet):-
         not(viveTiemposSinPrecedentes(weise, 1400)).
+
+    %Punto 5
+    test(frieren_es_un_héroe_ya_que_participó_en_al_menos_una_hazania_que_alguien_conoce, nondet):-
+        esHeroe(frieren).
+    test(wirbel_no_es_un_héroe_porque_no_participó_en_ninguna_hazania, nondet):-
+        not(esHeroe(wirbel)).
+    test(frieren_inspiró_a_Fern_pues_Fern_conoce_destruir_al_rey_demonio_en_donde_Frieren_participó):-
+        inspiroAUnHeroe(fern, frieren).
+    test(stark_inspiró_a_Frieren_pues_Frieren_conoce_rescatar_a_la_hermana_de_Wirbel_en_la_que_participó_Stark, nondet):-
+        inspiroAUnHeroe(frieren, stark).
+    test(nadie_inspiró_a_Eisen_a_ser_un_héroe_ya_que_no_sabemos_de_ninguna_hazania_que_él_conozca, nondet):-
+        not(inspiroAUnHeroe(eisen, _)).
+    %test(himmel_Fern_Frieren_Denken_es_una_cadena_de_inspiración_válida, nondet):-
+    %    .
+    %test(denken_Frieren_no_es_una_cadena_de_inspiración_válida_porque_Denken_no_inspiró_a_Frieren, nondet):-
+    %    .
+    %test(frieren_Fern_Frieren_no_es_una_cadena_de_inspiración_válida_ya_que_se_repite_2_veces_a_un_héroe, nondet):-
+    %    .
 
     :- end_tests(tpIntegrador).
