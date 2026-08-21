@@ -221,17 +221,31 @@ esHeroe(Persona):-
     member(Persona, Participantes).
 
 %b
-inspiroAUnHeroe(HeroeInspirado, Inspirador):-
-    esHeroe(HeroeInspirado),
-    conoceHazania(hazania(_, Participantes, _), _, _, _),
-    member(Inspirador, Participantes),
-    Inspirador \= HeroeInspirado.
+inspiroAUnHeroe(Inspirador, Inspirado):-
+    esHeroe(Inspirado),
+    esHeroe(Inspirador),
+    heroesQueConoce(Inspirado, Heroes),
+    member(Inspirador, Heroes),
+    Inspirador \= Inspirado.
+
+heroesQueConoce(Persona, Heroes):-
+    conoceHazania(hazania(_, Heroes, _), Persona, _, _).
+
+heroesQueConoce(Persona, Heroes):-
+    conoceHazania(NombreHazania, Persona, conmemoracion, _),
+    once(conoceHazania(hazania(NombreHazania, Heroes, _), _, _, _)).
 
 %c
-%cadenaDeInspiracion(HeroeInicial, Cadena):-
-%    esHeroe(HeroeInicial),
-%    dsp lo completo :)
+cadenaDeInspiracion([HeroeInicial , SegundoHeroe | Resto]):- 
+    inspiroAUnHeroe(HeroeInicial, SegundoHeroe),
+    armarCadena(SegundoHeroe, [SegundoHeroe, HeroeInicial], [SegundoHeroe | Resto]).
 
+armarCadena(HeroeActual, _, [HeroeActual]).
+
+armarCadena(HeroeActual, Visitados, [HeroeActual | Resto]):-
+    inspiroAUnHeroe(HeroeActual, SiguienteHeroe),
+    not(member(SiguienteHeroe, Visitados)),
+    armarCadena(SiguienteHeroe, [SiguienteHeroe | Visitados], Resto).
 
 
 :- begin_tests(tpIntegrador, []).
@@ -286,7 +300,7 @@ inspiroAUnHeroe(HeroeInspirado, Inspirador):-
 
     %Punto 4
     test(en_weise_se_recuerda_destruir_al_demonio_aura_en_1400, nondet):-
-        recuerdaHazaniaPueblo(weise, 1400, destruirAlDemonioAura).
+        recuerdaHazaniaPueblo(weise, 1400, destruirAlReyDemonio).
     test(en_klares_se_recuerda_rescatar_a_la_hermana_de_wirbel_en_1395, nondet):-
         recuerdaHazaniaPueblo(klares, 1395, rescatarALaHermanaDeWirbel).
     test(en_klares_no_se_recuerda_destruir_al_demonio_aura_en_1395, nondet):-
@@ -315,21 +329,21 @@ inspiroAUnHeroe(HeroeInspirado, Inspirador):-
         not(viveTiemposSinPrecedentes(weise, 1400)).
 
     %Punto 5
-    test(frieren_es_un_héroe_ya_que_participó_en_al_menos_una_hazania_que_alguien_conoce, nondet):-
+    test('Si alguien participo en una hazania que es conocida por otros, es un heroe', nondet):-
         esHeroe(frieren).
-    test(wirbel_no_es_un_héroe_porque_no_participó_en_ninguna_hazania, nondet):-
+    test('Si alguien no participo en una hazania conocida, no es un heroe', nondet):-
         not(esHeroe(wirbel)).
-    test(frieren_inspiró_a_Fern_pues_Fern_conoce_destruir_al_rey_demonio_en_donde_Frieren_participó):-
+    test('Si un heroe conoce una hazania en que otro heroe participo, se inspiro de ese', nondet):-
         inspiroAUnHeroe(fern, frieren).
-    test(stark_inspiró_a_Frieren_pues_Frieren_conoce_rescatar_a_la_hermana_de_Wirbel_en_la_que_participó_Stark, nondet):-
-        inspiroAUnHeroe(frieren, stark).
-    test(nadie_inspiró_a_Eisen_a_ser_un_héroe_ya_que_no_sabemos_de_ninguna_hazania_que_él_conozca, nondet):-
-        not(inspiroAUnHeroe(eisen, _)).
-    %test(himmel_Fern_Frieren_Denken_es_una_cadena_de_inspiración_válida, nondet):-
-    %    .
-    %test(denken_Frieren_no_es_una_cadena_de_inspiración_válida_porque_Denken_no_inspiró_a_Frieren, nondet):-
-    %    .
-    %test(frieren_Fern_Frieren_no_es_una_cadena_de_inspiración_válida_ya_que_se_repite_2_veces_a_un_héroe, nondet):-
-    %    .
+    test('Si un heroe conoce una hazania de la que otro participo, este ultimo inspiro al primero', nondet):-
+        inspiroAUnHeroe(stark, frieren).
+    test('Si un heroe no conoce ninguna hazania, no puede ser inspirado', nondet):-
+        not(inspiroAUnHeroe(_, eisen)).
+    test('Si los personajes inspiran a otros distintos recursivamente la cadena es valida', nondet):-
+        cadenaDeInspiracion([himmel, fern, frieren, denken]).
+    test('Si un personaje no inspiro a otro la cadena no es valida', nondet):-
+        not(cadenaDeInspiracion([denken, frieren])).
+    test('Una cadena ciclica no es valida', nondet):-
+        not(cadenaDeInspiracion([frieren, fern, frieren])).
 
-    :- end_tests(tpIntegrador).
+:- end_tests(tpIntegrador).
