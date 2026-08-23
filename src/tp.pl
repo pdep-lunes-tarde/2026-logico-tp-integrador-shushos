@@ -247,6 +247,29 @@ armarCadena(HeroeActual, Visitados, [HeroeActual | Resto]):-
     not(member(SiguienteHeroe, Visitados)),
     armarCadena(SiguienteHeroe, [SiguienteHeroe | Visitados], Resto).
 
+%Punto 6
+elDreamTeam(Lider, DreamTeam):-
+    esHeroe(Lider),
+    cadenaDeInspiracion(Cadena),
+    member(Lider,Cadena),
+    esAntecesor(Lider, Cadena, Antecesores),
+    antecesoresElegidos(Antecesores, Elegidos),
+    Elegidos \= [],
+    permutation([Lider | Elegidos], DreamTeam).
+
+esAntecesor(Lider, Cadena, Antecesores):-
+    append(Antecesores, [Lider | _ ], Cadena). %Recorre la cadena hasta el lider y se queda con eso 
+
+antecesoresElegidos([Antecesor | Resto], [Antecesor | MasElegido]):-
+    opcionalementeElegir(Resto, MasElegidos).
+antecesoresElegidos([_ | Resto], MasElegidos):-
+    opcionalementeElegir(Resto, MasElegidos).
+
+opcionalementeElegir([],[]).
+opcionalementeElegir([Antecesor|Resto], [Antecesor|MasElegidos]):-
+    opcionalementeElegir(Resto, MasElegidos).  
+opcionalementeElegir([_ | Resto], MasElegidos):-
+    opcionalementeElegir(Resto, MasElegidos).
 
 :- begin_tests(tpIntegrador, []).
 
@@ -345,5 +368,15 @@ armarCadena(HeroeActual, Visitados, [HeroeActual | Resto]):-
         not(cadenaDeInspiracion([denken, frieren])).
     test('Una cadena ciclica no es valida', nondet):-
         not(cadenaDeInspiracion([frieren, fern, frieren])).
+
+    %Punto 6
+    tets("Para un heroe, el mismo y un antecesor directo forman un dream team", nondet):-
+        elDreamTeam(fern, [fern, himmel]).
+    test("Un dream siempre es valido sin importar el orden de los heroes en el dream team", nondet):-
+        elDreamTeam(fern, [fern, himmel]).
+    tets("El heroe individualmenre no es un dream team valido", nondet):-
+        not(elDreamTeam(fern, [fern])).
+    test("El dream team no es valido si no incluye al heroe", nondet):-
+        not(elDreamTeam(fern, [frieren])).
 
 :- end_tests(tpIntegrador).
