@@ -16,7 +16,8 @@ esperanzaDeVida(enano, 350).
 
 %Punto 1b
 estaVivo(Persona, Anio):-
-    habitante(Persona, elfo, AnioNacio, _),
+    habitante(Persona, Raza, AnioNacio, _),
+    not(esperanzaDeVida(Raza, _)),
     Anio > AnioNacio.
 estaVivo(Persona, Anio):-
     habitante(Persona, Raza, AnioNacio, _),
@@ -36,7 +37,7 @@ conoceHazania(hazania(destruirAlReyDemonio, [frieren, himmel, heiter, eisen], en
 conoceHazania(hazania(recuperarAlGatoPerdido, [himmel, frieren], weise), kane, presencio, 1375).
 
 %Del Punto 3
-conoceHazania(Hazania, Persona, conmemoracion, Desde):-
+conoceHazania(Hazania, Persona, Conmemoracion, Desde):-
     habitante(Persona, _, Nacimiento, Pueblo),
     conmemora(Pueblo, Hazania, Conmemoracion),
     inicioConmemoracion(Conmemoracion, Inicio), maximo(Nacimiento, Inicio, Desde).
@@ -46,22 +47,20 @@ conoceHazania(Hazania, Persona, conmemoracion, Desde):-
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     estaVivo(Persona, Anio),
     conoceHazania(hazania(Hazania, _, _) , Persona, Forma, AnioForma),
+    Anio >= AnioForma,
     verificaSiRecuerdaPorHazania(Forma, Anio, AnioForma).
 esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     estaVivo(Persona, Anio),
-    conoceHazania(Hazania, Persona, conmemoracion, Desde),
+    conoceHazania(Hazania, Persona, Conmemoracion, Desde),
     Anio >= Desde,
     habitante(Persona, _, _, Pueblo),
     conmemora(Pueblo, Hazania, Conmemoracion),
     conmemoracionVigente(Conmemoracion, Anio).
 
-verificaSiRecuerdaPorHazania(presencio, Anio, AnioForma):-
-    Anio >= AnioForma.
+verificaSiRecuerdaPorHazania(presencio, Anio, AnioForma).
 verificaSiRecuerdaPorHazania(escuchoCancion, Anio, AnioForma):-
-    Anio >= AnioForma,
     Anio =< (AnioForma + 15).
 verificaSiRecuerdaPorHazania(leyoLibro(Paginas), Anio, AnioForma):-
-    Anio >= AnioForma,
     Anio =< (AnioForma + Paginas).
 
 
@@ -145,7 +144,6 @@ paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas):-
 
 
 puebloMasLector(Pueblo, Anio):-
-    habitante(_, _, _, Pueblo),
     paginasLeidasPorPueblo(Pueblo, Anio, PaginasLeidas),
     forall(
         (habitante(_, _, _, OtroPueblo), Pueblo \= OtroPueblo), 
@@ -183,8 +181,7 @@ puebloChismoso(Pueblo, Anio):-
     habitante(_, _, _, Pueblo),
     forall(
             (
-                habitante(Persona, _, _, Pueblo),
-                esRecordadaEnUnAnio(Persona, Anio, Hazania)
+                recuerdaHazaniaPueblo(Pueblo, Anio, Hazania)
             ), 
             not(estaCorroborada(Hazania))
           ).
@@ -224,7 +221,6 @@ esHeroe(Persona):-
 %b
 inspiroAUnHeroe(Inspirador, Inspirado):-
     esHeroe(Inspirado),
-    esHeroe(Inspirador),
     heroesQueConoce(Inspirado, Heroes),
     member(Inspirador, Heroes),
     Inspirador \= Inspirado.
@@ -232,6 +228,7 @@ inspiroAUnHeroe(Inspirador, Inspirado):-
 heroesQueConoce(Persona, Heroes):-
     conoceHazania(hazania(_, Heroes, _), Persona, _, _).
 
+%borrar
 heroesQueConoce(Persona, Heroes):-
     conoceHazania(NombreHazania, Persona, conmemoracion, _),
     once(conoceHazania(hazania(NombreHazania, Heroes, _), _, _, _)).
@@ -260,7 +257,7 @@ elDreamTeam(Lider, DreamTeam):-
     permutation([Lider | Elegidos], DreamTeam).
 
 esAntecesor(Lider, Cadena, Antecesores):-
-    append(Antecesores, [Lider | _ ], Cadena). %Recorre la cadena hasta el lider y se queda con eso 
+    append(Antecesores, [Lider], Cadena). %Recorre la cadena hasta el lider y se queda con eso 
 
 antecesoresElegidos([Antecesor | Resto], [Antecesor | MasElegidos]):-
     opcionalementeElegir(Resto, MasElegidos).
