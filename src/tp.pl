@@ -214,6 +214,7 @@ viveTiemposSinPrecedentes(Pueblo, Anio):-
             )
           ).
 
+
 %Parte 5
 %a
 esHeroe(Persona):-
@@ -247,6 +248,7 @@ armarCadena(HeroeActual, Visitados, [HeroeActual | Resto]):-
     not(member(SiguienteHeroe, Visitados)),
     armarCadena(SiguienteHeroe, [SiguienteHeroe | Visitados], Resto).
 
+
 %Punto 6
 elDreamTeam(Lider, DreamTeam):-
     esHeroe(Lider),
@@ -260,7 +262,7 @@ elDreamTeam(Lider, DreamTeam):-
 esAntecesor(Lider, Cadena, Antecesores):-
     append(Antecesores, [Lider | _ ], Cadena). %Recorre la cadena hasta el lider y se queda con eso 
 
-antecesoresElegidos([Antecesor | Resto], [Antecesor | MasElegido]):-
+antecesoresElegidos([Antecesor | Resto], [Antecesor | MasElegidos]):-
     opcionalementeElegir(Resto, MasElegidos).
 antecesoresElegidos([_ | Resto], MasElegidos):-
     opcionalementeElegir(Resto, MasElegidos).
@@ -270,6 +272,7 @@ opcionalementeElegir([Antecesor|Resto], [Antecesor|MasElegidos]):-
     opcionalementeElegir(Resto, MasElegidos).  
 opcionalementeElegir([_ | Resto], MasElegidos):-
     opcionalementeElegir(Resto, MasElegidos).
+
 
 :- begin_tests(tpIntegrador, []).
 
@@ -370,11 +373,11 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
         not(cadenaDeInspiracion([frieren, fern, frieren])).
 
     %Punto 6
-    tets("Para un heroe, el mismo y un antecesor directo forman un dream team", nondet):-
+    test("Para un heroe, el mismo y un antecesor directo forman un dream team", nondet):-
         elDreamTeam(fern, [fern, himmel]).
     test("Un dream siempre es valido sin importar el orden de los heroes en el dream team", nondet):-
         elDreamTeam(fern, [fern, himmel]).
-    tets("El heroe individualmenre no es un dream team valido", nondet):-
+    test("El heroe individualmenre no es un dream team valido", nondet):-
         not(elDreamTeam(fern, [fern])).
     test("El dream team no es valido si no incluye al heroe", nondet):-
         not(elDreamTeam(fern, [frieren])).
