@@ -275,19 +275,13 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
     
 
     %Punto2
-    test(lawine_no_recuerda_destruirAlDemonioAura_en_1380_porque_no_escucho_la_cancion, nondet):-
+    test("Un personaje no recuerda una hazania si el anio es menor al de cuando la conoce", nondet):-
         not(esRecordadaEnUnAnio(lawine, 1380, destruirAlDemonioAura)).
-    test(lawine_recuerda_detruirAlDemonioAura_en_1400, nondet):-
+    test("Un personaje recuerda una hazania una determinada cantidad de tiempo, dependiendo como la conocio", nondet):-
         esRecordadaEnUnAnio(lawine, 1400, destruirAlDemonioAura).
-    test(lawine_ya_no_recuerda_destruirAlDemonioAura_en_1450, nondet):-
+    test("Un personaje ya no recuerda una hazania pasado determinado tiempo, a menos que la haya presenciado", nondet):-
         not(esRecordadaEnUnAnio(lawine, 1450, destruirAlDemonioAura)).
-    test(voll_recuerda_destruirAlDemonioAura_en_1450, nondet):-
-        esRecordadaEnUnAnio(voll, 1450, destruirAlDemonioAura).
-    test(voll_no_recuerda_destruirAlDemonioAura_en_1460, nondet):-
-        not(esRecordadaEnUnAnio(voll, 1460, destruirAlDemonioAura)).
-    test(wirbel_recuerda_rescatarALaHermanaDeWirbel_en_1430, nondet):-
-        esRecordadaEnUnAnio(wirbel, 1430, rescatarALaHermanaDeWirbel).
-    test(wirbel_no_recuerda_rescatarALaHermanaDeWirbel_en_1440_porque_ya_no_esta_vivo, nondet):-
+    test("Un personaje ya no recuerda una hazania si no esta vivo", nondet):-
         not(esRecordadaEnUnAnio(wirbel, 1440, rescatarALaHermanaDeWirbel)).
     test('Si una hazania es conocida con una unica version, esta corroborada', nondet):-
         estaCorroborada(rescatarALaHermanaDeWirbel).
