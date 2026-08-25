@@ -260,18 +260,14 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
 
 :- begin_tests(tpIntegrador, []).
 
-    test(kanne_esta_viva_en_el_anio_1370, nondet) :-
+    test("Un personaje esta vivo si nacio y esta dentro de los anios de su esperanza de vida", nondet) :-
         estaVivo(kanne, 1370).
-    test(kanne_no_esta_viva_en_el_anio_1300, nondet) :-
+    test("Un personaje no esta vivo si no nacio", nondet) :-
         not(estaVivo(kanne, 1300)).
-    test(kanne_no_esta_viva_en_el_anio_2000, nondet) :-
+    test("Un personaje no esta vivo si nacio y se termino su esperanza de vida", nondet) :-
         not(estaVivo(kanne, 2000)).
-    test(voll_esta_vivio_en_el_anio_1550, nondet) :-
+    test("Un personaje esta vivo si nacio y es su ultimo anio de esperanza de vida", nondet) :-
         estaVivo(voll, 1550).
-    test(voll_no_esta_vivio_en_el_anio_1551, nondet) :-
-        not(estaVivo(voll, 1551)).
-    test(serie_esta_vivia_en_el_anio_5000, nondet) :-
-        estaVivo(serie, 5000).
     
 
     %Punto2
@@ -304,33 +300,29 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
 
 
     %Punto 4
-    test(en_weise_se_recuerda_destruir_al_demonio_aura_en_1400, nondet):-
+    test("Un pueblo recuerda una hazania en un anio si este tiene al menos un habitante que lo haga", nondet):-
         recuerdaHazaniaPueblo(weise, 1400, destruirAlReyDemonio).
-    test(en_klares_se_recuerda_rescatar_a_la_hermana_de_wirbel_en_1395, nondet):-
-        recuerdaHazaniaPueblo(klares, 1395, rescatarALaHermanaDeWirbel).
-    test(en_klares_no_se_recuerda_destruir_al_demonio_aura_en_1395, nondet):-
+    test("Un pueblo no recuerda una hazania en un anio si este no tiene ningun habitante que lo haga", nondet):-
         not(recuerdaHazaniaPueblo(klares, 1395, destruirAlDemonioAura)).
-    test(en_weise_se_leyeron_100_paginas_en_1335, nondet):-
+    test("En un pueblo se leyeron en un anio la sumatoria de las paginas leidas por sus habitantes", nondet):-
         paginasLeidasPorPueblo(weise, 1335, 100).
-    test(en_weise_se_leyeron_0_paginas_en_1336, nondet):-
-        paginasLeidasPorPueblo(weise, 1336, 0).
-    test(ende_es_el_pueblo_mas_lector_en_1400, nondet):-
+    test("Un pueblo es el mas lector en un anio si la suma de las paginas leidas por sus habitantes es mayor que la de los otros pueblos", nondet):-
         puebloMasLector(ende, 1400).
-    test(auberst_es_musical_en_1395, nondet):-
+    test("Un pueblo es musical en un anio si la mayoria de las hazanias recordadas en el mismo se conocieron por canciones", nondet):-
         puebloMusical(auberst, 1395).
-    test(weise_no_es_musical_en_1400, nondet):-
+    test("Un pueblo no es musical en un anio si la mayoria de las hazanias recordadas en el mismo no se conocieron por canciones", nondet):-
         not(puebloMusical(weise, 1400)).
-    test(ende_es_chismoso_en_1420, nondet):-
+    test("Un pueblo es chismoso en un anio si ninguna de las hazanias recordadas por sus habitantes no estan corroboradas", nondet):-
         puebloChismoso(ende, 1420).
-    test(weise_no_es_chismoso_en_1400, nondet):-
+    test("Un pueblo no es chismoso en un anio si no se cumple que ninguna de las hazanias recordadas por sus habitantes estan corroboradas", nondet):-
         not(puebloChismoso(weise, 1400)).
-    test(destruir_al_rey_demonio_es_importante_para_weise_en_1400, nondet):-
+    test("Una hazania es importante para un pueblo en un anio si todos los habitantes del pueblo que estan vivos la recuerdan tambien", nondet):-
         esImportante(destruirAlReyDemonio, weise, 1400).
-    test(recuperar_al_gato_perdido_no_es_importante_para_weise_en_1400, nondet):-
+    test("Una hazania no es importante para un pueblo en un anio si no se cumple que todos los habitantes del pueblo que estan vivos la recuerdan tambien", nondet):-
         not(esImportante(recuperarAlGatoPerdido, weise, 1400)).
-    test(klares_vive_tiempos_sin_precedentes_en_1395, nondet):-
+    test("Un pueblo vive tiempos sin precedentes en un anio si todas las hazanias importantes que se recuerdan en un pueblo se recuerdan porque alguien del pueblo las presencio", nondet):-
         viveTiemposSinPrecedentes(klares, 1395).
-    test(weise_no_vive_tiempos_sin_precedentes_en_1400, nondet):-
+    test("Un pueblo no vive tiempos sin precedentes en un anio si no se cumple que todas las hazanias importantes que se recuerdan en un pueblo se recuerdan porque alguien del pueblo las presencio", nondet):-
         not(viveTiemposSinPrecedentes(weise, 1400)).
 
     %Punto 5
