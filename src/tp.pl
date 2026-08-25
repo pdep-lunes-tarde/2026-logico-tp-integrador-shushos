@@ -221,17 +221,9 @@ esHeroe(Persona):-
 %b
 inspiroAUnHeroe(Inspirador, Inspirado):-
     esHeroe(Inspirado),
-    heroesQueConoce(Inspirado, Heroes),
+    conoceHazania(hazania(_, Heroes, _), Inspirado, _, _).
     member(Inspirador, Heroes),
     Inspirador \= Inspirado.
-
-heroesQueConoce(Persona, Heroes):-
-    conoceHazania(hazania(_, Heroes, _), Persona, _, _).
-
-%borrar
-heroesQueConoce(Persona, Heroes):-
-    conoceHazania(NombreHazania, Persona, conmemoracion, _),
-    once(conoceHazania(hazania(NombreHazania, Heroes, _), _, _, _)).
 
 %c
 cadenaDeInspiracion([HeroeInicial , SegundoHeroe | Resto]):- 
@@ -302,13 +294,13 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
         esRecordadaEnUnAnio(wirbel, 1430, rescatarALaHermanaDeWirbel).
     test(wirbel_no_recuerda_rescatarALaHermanaDeWirbel_en_1440_porque_ya_no_esta_vivo, nondet):-
         not(esRecordadaEnUnAnio(wirbel, 1440, rescatarALaHermanaDeWirbel)).
-    test(rescatar_a_la_hermana_de_Wirbel_es_una_hazania_corroborada, nondet):-
+    test('Si una hazania es conocida con una unica version, esta corroborada', nondet):-
         estaCorroborada(rescatarALaHermanaDeWirbel).
-    test(destruir_al_demonio_aura_no_es_hazania_corroborada, nondet):-
+    test('Una hazania que tiene varias versiones, no esta corroborada', nondet):-
         not(estaCorroborada(destruirAlDemonioAura)).
-    test(destruir_al_demonio_aura_paso_al_olvido_en_1460, nondet):-
+    test('Una hazania paso al olvido si no es recordada en ese anio', nondet):-
         pasoAlOlvido(destruirAlDemonioAura, 1460).
-    test(destruir_al_demonio_aura_no_paso_al_olvido_en_1440):-
+    test('Una hazania no paso al olvido si todavia la recuerdan', nondet):-
         not(pasoAlOlvido(destruirAlDemonioAura, 1440)).
     
 
