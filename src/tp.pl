@@ -49,19 +49,15 @@ esRecordadaEnUnAnio(Persona, Anio, Hazania):-
     conoceHazania(hazania(Hazania, _, _) , Persona, Forma, AnioForma),
     Anio >= AnioForma,
     verificaSiRecuerdaPorHazania(Forma, Anio, AnioForma).
-esRecordadaEnUnAnio(Persona, Anio, Hazania):-
-    estaVivo(Persona, Anio),
-    conoceHazania(Hazania, Persona, Conmemoracion, Desde),
-    Anio >= Desde,
-    habitante(Persona, _, _, Pueblo),
-    conmemora(Pueblo, Hazania, Conmemoracion),
-    conmemoracionVigente(Conmemoracion, Anio).
 
-verificaSiRecuerdaPorHazania(presencio, Anio, AnioForma).
+verificaSiRecuerdaPorHazania(presencio, _, _).
 verificaSiRecuerdaPorHazania(escuchoCancion, Anio, AnioForma):-
     Anio =< (AnioForma + 15).
 verificaSiRecuerdaPorHazania(leyoLibro(Paginas), Anio, AnioForma):-
     Anio =< (AnioForma + Paginas).
+verificaSiRecuerdaPorHazania(diaFestivo(_), _, _).
+verificaSiRecuerdaPorHazania(estatua(Nombre, Material, Construccion), Anio, _):-
+    conmemoracionVigente(estatua(Nombre, Material, Construccion), Anio).
 
 
 %Punto 2b
@@ -86,43 +82,42 @@ pasoAlOlvido(Hazania, Anio):-
     not(esRecordadaEnUnAnio(_, Anio, Hazania)).
 
 
-%Punto 3
+% Punto 3
 
-conmemora(weise, destruirAlReyDemonio, diaFestivo(1340)).
-conmemora(auberst, destruirAlReyDemonio, estatua("el equipo de heroes", bronce, 1370)).
-conmemora(auberst, destruirASchlatElOmnisciente, estatua("el heroe del sur", marmol, 1340)).
-
+conmemora( weise,hazania(destruirAlReyDemonio,[frieren, himmel, heiter, eisen],ende ), diaFestivo(1340)).
+conmemora(auberst, hazania(destruirAlReyDemonio, [frieren, himmel, heiter, eisen],ende),estatua("el equipo de heroes", bronce, 1370)).
+conmemora(auberst, hazania(destruirASchlatElOmnisciente, [elHeroeDelSur],ende), estatua("el heroe del sur", marmol, 1340)).
 
 mantenimiento("el equipo de heroes", 1400).
 mantenimiento("el equipo de heroes", 1450).
 mantenimiento("el heroe del sur", 1410).
 
-
 duracion(bronce, 15).
 duracion(marmol, 30).
-
 
 ventanaValida(FechaInicio, Material, Anio):-
     duracion(Material, Duracion),
     Anio >= FechaInicio,
     Anio =< FechaInicio + Duracion.
 
-
 inicioConmemoracion(diaFestivo(Inicio), Inicio).
 inicioConmemoracion(estatua(_, _, Inicio), Inicio).
 
-
 conmemoracionVigente(diaFestivo(_), _).
+
 conmemoracionVigente(estatua(_, Material, Construccion), Anio):-
     ventanaValida(Construccion, Material, Anio).
+
 conmemoracionVigente(estatua(Nombre, Material, _), Anio):-
     mantenimiento(Nombre, FechaMantenimiento),
     ventanaValida(FechaMantenimiento, Material, Anio).
-   
-maximo(X,Y,X):-
+
+maximo(X, Y, X):-
     X >= Y.
-maximo(X,Y,Y):-
+
+maximo(X, Y, Y):-
     Y > X.
+
 
 
 %Punto 4
@@ -221,7 +216,7 @@ esHeroe(Persona):-
 %b
 inspiroAUnHeroe(Inspirador, Inspirado):-
     esHeroe(Inspirado),
-    conoceHazania(hazania(_, Heroes, _), Inspirado, _, _).
+    conoceHazania(hazania(_, Heroes, _), Inspirado, _, _),
     member(Inspirador, Heroes),
     Inspirador \= Inspirado.
 
@@ -304,12 +299,13 @@ opcionalementeElegir([_ | Resto], MasElegidos):-
         not(pasoAlOlvido(destruirAlDemonioAura, 1440)).
     
 
+    
     %punto 3
-    test(lawine_recuerda_destruir_al_rey_demonio_por_estatua_en_1400, nondet):-
+    test('Un personaje recordara una hazana si en su pueblo en ese ano hay una estatuta en buenas condiciones que conmermore la hazana', nondet):-
         esRecordadaEnUnAnio(lawine, 1400, destruirAlReyDemonio).
-    test(lawine_no_recuerda_destruir_al_rey_demonio_en_1390_por_estatua, nondet):-
+    test('Un personaje no recordara una hazana si en su pueblo en ese ano no hay una estatuta en buenas condiciones que conmermore la hazana', nondet):-
         not(esRecordadaEnUnAnio(lawine, 1390, destruirAlReyDemonio)).
-    test(fern_recuerda_destruir_al_rey_demonio_por_dia_festivo_en_1400, nondet):-
+    test('Un personaje recordara una hazana si su pueblo tiene un dia festivo del mismo', nondet):-
         esRecordadaEnUnAnio(fern, 1400, destruirAlReyDemonio).
 
 
